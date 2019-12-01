@@ -144,10 +144,18 @@ public class Pipes extends AbstractCraftBookMechanic {
 
                 if(sign != null) {
                     for(String line3 : RegexUtil.COMMA_PATTERN.split(sign.getLine(2))) {
-                        pFilters.add(ItemSyntax.getItem(line3.trim()));
+                        if (line3.startsWith("#")) {
+                            pFilters.addAll(ItemSyntax.getItemGroup(line3.trim()));
+                        } else {
+                            pFilters.add(ItemSyntax.getItem(line3.trim()));
+                        }
                     }
                     for(String line4 : RegexUtil.COMMA_PATTERN.split(sign.getLine(3))) {
-                        pExceptions.add(ItemSyntax.getItem(line4.trim()));
+                        if (line4.startsWith("#")) {
+                            pExceptions.addAll(ItemSyntax.getItemGroup(line4.trim()));
+                        } else {
+                            pExceptions.add(ItemSyntax.getItem(line4.trim()));
+                        }
                     }
 
                     pFilters.removeAll(Collections.<ItemStack>singleton(null));
@@ -326,15 +334,20 @@ public class Pipes extends AbstractCraftBookMechanic {
 
         if(sign != null) {
             for(String line3 : RegexUtil.COMMA_PATTERN.split(sign.getLine(2))) {
-                filters.add(ItemSyntax.getItem(line3.trim()));
+                if (line3.startsWith("#")) {
+                    filters.addAll(ItemSyntax.getItemGroup(line3.trim()));
+                } else {
+                    filters.add(ItemSyntax.getItem(line3.trim()));
+                }
             }
             for(String line4 : RegexUtil.COMMA_PATTERN.split(sign.getLine(3))) {
-                exceptions.add(ItemSyntax.getItem(line4.trim()));
+                if (line4.startsWith("#")) {
+                    exceptions.addAll(ItemSyntax.getItemGroup(line4.trim()));
+                } else {
+                    exceptions.add(ItemSyntax.getItem(line4.trim()));
+                }
             }
         }
-
-        filters.removeAll(Collections.<ItemStack>singleton(null));
-        exceptions.removeAll(Collections.<ItemStack>singleton(null));
 
         Set<Vector> visitedPipes = new HashSet<>();
 

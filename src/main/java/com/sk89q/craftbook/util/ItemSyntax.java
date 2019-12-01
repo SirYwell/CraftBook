@@ -16,6 +16,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Tag;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -32,10 +33,15 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * The Standard Item Syntax. This class is built to be able to survive on its own, without CraftBook.
@@ -298,5 +304,29 @@ public final class ItemSyntax {
         }
 
         return itemCache.getUnchecked(line);
+    }
+
+    private static final LoadingCache<String, Set<ItemStack>> tagsCache = CacheBuilder.newBuilder()
+            .maximumSize(1024)
+            .expireAfterAccess(10, TimeUnit.MINUTES)
+            .build(new CacheLoader<String, Set<ItemStack>>() {
+                @Override
+                public Set<ItemStack> load(String key) throws Exception {
+                    String id = key.replaceFirst("#", "");
+                    Tag<Material> tag = Bukkit.getTag(Tag.REGISTRY_ITEMS, NamespacedKey.minecraft(id), Material.class);
+                    if (tag == null) {
+                        return  Collections.emptySet();
+                    }
+                    return tag.getValues().stream().map(ItemStack::new).collect(Collectors.toSet());
+                }
+            });
+
+    public static Set<ItemStack> getItemGroup(String line) {
+
+        if (line == null ||line.isEmpty()) {
+            return null;
+        }
+
+        return tagsCache.getUnchecked(line);
     }
 }
