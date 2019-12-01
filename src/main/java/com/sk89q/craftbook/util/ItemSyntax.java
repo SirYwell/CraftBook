@@ -321,6 +321,12 @@ public final class ItemSyntax {
                 }
             });
 
+    /**
+     * Parse an item group (https://minecraft.gamepedia.com/Tag) from a line of text.
+     *
+     * @param line The line to parse it from.
+     * @return The set of items covered by the tag.
+     */
     public static Set<ItemStack> getItemGroup(String line) {
 
         if (line == null ||line.isEmpty()) {
